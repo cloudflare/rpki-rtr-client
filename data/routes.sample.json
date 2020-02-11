@@ -1,0 +1,12 @@
+{
+  "serial": 0,
+  "routes": {
+    "announce": [
+      {
+        "ip": "2001:db8::/32",
+        "asn": 65001
+      }
+    ],
+    "withdraw": []
+  }
+}
