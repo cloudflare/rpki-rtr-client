@@ -10,11 +10,11 @@ from rtr_logging import rfc8210logger
 
 class rfc8210router(object):
 
-	def __init__(self, serial=None, session_id=0, debug=False):
+	def __init__(self, serial=None, session_id=0, debug=0):
 		self.time_next_refresh = None
 
 		self._debug_level = debug
-		if self._debug_level:
+		if self._debug_level > 0:
 			self.logger = rfc8210logger(self._debug_level).getLogger()
 		else:
 			self.logger = None

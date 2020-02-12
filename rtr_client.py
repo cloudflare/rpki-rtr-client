@@ -116,7 +116,7 @@ def dump_routes(rtr_session, serial):
 		sys.stderr.write('\nDUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' % (serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
 
-def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debug=False):
+def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debug=0):
 	rtr_session = rfc8210router(serial=serial, debug=debug)
 
 	if dump:
@@ -212,7 +212,7 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 	return
 
 def doit(args=None):
-	debug = False
+	debug = 0
 	dump = False
 	host = None
 	port = None
@@ -221,7 +221,7 @@ def doit(args=None):
 
 	usage = ('usage: rtr_client '
 		 + '[-H|--help] '
-		 + '[-v|--verbose] '
+		 + '[-v|--erbose] '
 		 + '[-h|--host] hostname '
 		 + '[-p|--port] portnumber '
 		 + '[-s|--serial] serialnumber '
@@ -246,7 +246,7 @@ def doit(args=None):
 		if opt in ('-H', '--help'):
 			exit(usage)
 		elif opt in ('-v', '--verbose'):
-			debug = True
+			debug += 1
 		elif opt in ('-h', '--host'):
 			host = arg
 		elif opt in ('-p', '--port'):
