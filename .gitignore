@@ -1,0 +1,6 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# the data files
+data/routes.[0-9]*.json
