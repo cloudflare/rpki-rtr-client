@@ -149,7 +149,7 @@ class rfc8210router(object):
 			if mask == maxlen:
 				if self._debug_level > 1:
 					self._debug_("%1s %-20s %4s AS%d" % (flag_announce, cidr, '', asn))
-				self._add_route(flag_announce, str(ip), None, asn)
+				self._add_route(flag_announce, str(cidr), None, asn)
 			else:
 				if self._debug_level > 1:
 					self._debug_("%1s %-20s %4d AS%d" % (flag_announce, cidr, maxlen, asn))
