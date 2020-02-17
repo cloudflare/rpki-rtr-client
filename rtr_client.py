@@ -103,7 +103,7 @@ class Process(object):
 def now_in_utc():
 	now = datetime.utcnow().replace(tzinfo=None)
 	# YYYY-MM-DD-HHMMSS
-	return (now.strftime('%Y-%m-%d-%H%M%S'))
+	return now.strftime('%Y-%m-%d-%H%M%S')
 
 def data_directory(now):
 	# data/YYYY-MM
@@ -133,7 +133,7 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 	rtr_session = rfc8210router(serial=serial, debug=debug)
 
 	if dump:
-		data_directory()
+		data_directory(now_in_utc())
 		dump_fd = open('data/__________-raw-data.bin', 'w')
 
 	p = Process()
