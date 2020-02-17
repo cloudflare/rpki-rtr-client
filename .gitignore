@@ -3,4 +3,8 @@ __pycache__/
 *.py[cod]
 
 # the data files
-data/routes.[0-9]*.json
+data/*/*.routes.[0-9]*.json
+
+# extras
+.swp
+.swo
