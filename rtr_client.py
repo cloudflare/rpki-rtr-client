@@ -8,6 +8,8 @@ import select
 import time
 import json
 
+from datetime import datetime, timedelta
+
 from rtr_protocol import rfc8210router
 
 #
@@ -98,9 +100,19 @@ class Process(object):
 	def clear(self):
 		self.buf.clear()
 
-def data_directory():
+def now_in_utc():
+	now = datetime.utcnow().replace(tzinfo=None)
+	# YYYY-MM-DD-HHMMSS
+	return (now.strftime('%Y-%m-%d-%H%M%S'))
+
+def data_directory(now):
+	# data/YYYY-MM
 	try:
 		os.mkdir('data')
+	except FileExistsError:
+		pass
+	try:
+		os.mkdir('data' + '/' + now[0:7])
 	except FileExistsError:
 		pass
 
@@ -108,9 +120,10 @@ def dump_routes(rtr_session, serial):
 	# dump present routes into file based on serial number
 	routes = rtr_session.routes()
 	if len(routes['announce']) > 0 or len(routes['withdraw']) > 0:
-		data_directory()
+		now = now_in_utc()
+		data_directory(now)
 		j = {'serial': serial, 'routes': routes}
-		with open('data/routes.%08d.json' % (serial), 'w') as fd:
+		with open('data/%s/%s.routes.%08d.json' % (now[0:7], now,  serial), 'w') as fd:
 			fd.write(json.dumps(j))
 		rtr_session.clear_routes()
 		sys.stderr.write('\nDUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' % (serial, len(routes['announce']), len(routes['withdraw'])))
