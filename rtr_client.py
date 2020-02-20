@@ -124,7 +124,8 @@ def dump_routes(rtr_session, serial):
 		data_directory(now)
 		j = {'serial': serial, 'routes': routes}
 		with open('data/%s/%s.routes.%08d.json' % (now[0:7], now,  serial), 'w') as fd:
-			fd.write(json.dumps(j))
+			fd.write(json.dumps(j, indent=2))
+		rtr_session.dump()
 		rtr_session.clear_routes()
 		sys.stderr.write('\nDUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' % (serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
