@@ -8,6 +8,23 @@ data/routingtable.json
 data/__________-raw-data.bin
 data/*/*.routes.[0-9]*.json
 
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
 # extras
 .swp
 .swo
