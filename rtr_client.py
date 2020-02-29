@@ -272,7 +272,7 @@ def doit(args=None):
 
 	usage = ('usage: rtr_client '
 		 + '[-H|--help] '
-		 + '[-v|--erbose] '
+		 + '[-v|--verbose] '
 		 + '[-h|--host] hostname '
 		 + '[-p|--port] portnumber '
 		 + '[-s|--serial] serialnumber '
