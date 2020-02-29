@@ -17,10 +17,18 @@ Presently the code is easiest to install via github.
 The [pytricia](https://pypi.org/project/pytricia/) package is used for storing a routing table.
 ## USAGE
 Cloudflare provides an open RTR server at `rtr.rpki.cloudflare.com` port `8282` based on Cloudflare's [GoRTR](https://github.com/cloudflare/gortr) open source RTR server.
-That default hostname and port are compiled into the source code.
-You can specify your own host and port via the command line `-h` and `-p` arguments.
+
+Usage is via the `--help` argument.
 ```
-   $ ./rtr_client.py -h rtr.rpki.cloudflare.com -p 8282
+   $ ./rtr_client.py --help
+   usage: rtr_client [-H|--help] [-v|--verbose] [-h|--host] hostname [-p|--port] portnumber [-s|--serial] serialnumber [-t|--timeout] seconds [-d|--dump] 
+   $
+```
+
+The Cloudflare open RTR server default hostname and port are compiled into the source code.
+You can specify your own host and port via the command line `-h|--host` and `-p|--port` arguments.
+```
+   $ ./rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
    ...
    ^C
    $
@@ -92,7 +100,9 @@ Additionally, the full list of valid ROAs is dumped into `data/routingtable.json
 ```
 The `-l` argument will show add more specific ROAs.
 
-The code can also dump the raw binary protocol and then replay that data to debug the protocol with the `-d` argument. This generates a `data/__________-raw-data.bin` file. The `file_process.py` command will process that file.
+The code can also dump the raw binary protocol and then replay that data to debug the protocol with the `-d|--dump` argument.
+This generates a `data/__________-raw-data.bin` file.
+The `file_process.py` command will process that file.
 
 ## CHANGELOG
  - This is the first release and while it works, it is not ready for prime time
