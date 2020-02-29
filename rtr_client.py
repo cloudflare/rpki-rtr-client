@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""RTR client"""
 
 import sys
 import os
@@ -7,8 +8,13 @@ import socket
 import select
 import time
 import json
+import ipaddress
+from datetime import datetime
 
-from datetime import datetime, timedelta
+try:
+	import pytricia
+except:
+	pytricia = None
 
 from rtr_protocol import rfc8210router
 
@@ -19,6 +25,8 @@ from rtr_protocol import rfc8210router
 #
 
 class Connect(object):
+	"""RTR client"""
+
 	rtr_host = 'rtr.rpki.cloudflare.com'
 	rtr_port = 8282
 	fd = None
@@ -36,7 +44,7 @@ class Connect(object):
 		time.sleep(n)
 
 	def _connect(self):
-		for ii in [1,2,4,8,16,32]:
+		for ii in [1, 2, 4, 8, 16, 32]:
 			try:
 				fd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 				fd.settimeout(self.connect_timeout)
@@ -45,7 +53,7 @@ class Connect(object):
 			except KeyboardInterrupt:
 				sys.stderr.write('socket connection: ^C\n')
 				sys.stderr.flush()
-				exit(1)
+				sys.exit(1)
 			except socket.timeout:
 				sys.stderr.write('socket connection: Timeout\n ')
 				sys.stderr.flush()
@@ -59,7 +67,11 @@ class Connect(object):
 		return None
 
 class Process(object):
+	"""RTR client"""
+
 	class Buffer(object):
+		"""RTR client"""
+
 		def __init__(self):
 			self.last_buffer = None
 
@@ -79,7 +91,6 @@ class Process(object):
 
 	def __init__(self):
 		self.buf = self.Buffer()
-		pass
 
 	def do_hunk(self, rtr_session, v):
 		# sys.stderr.write('(%d)' % len(v))
@@ -101,11 +112,15 @@ class Process(object):
 		self.buf.clear()
 
 def now_in_utc():
+	"""RTR client"""
+
 	now = datetime.utcnow().replace(tzinfo=None)
 	# YYYY-MM-DD-HHMMSS
 	return now.strftime('%Y-%m-%d-%H%M%S')
 
 def data_directory(now):
+	"""RTR client"""
+
 	# data/YYYY-MM
 	try:
 		os.mkdir('data')
@@ -117,20 +132,41 @@ def data_directory(now):
 		pass
 
 def dump_routes(rtr_session, serial):
+	"""RTR client"""
+
 	# dump present routes into file based on serial number
 	routes = rtr_session.routes()
 	if len(routes['announce']) > 0 or len(routes['withdraw']) > 0:
 		now = now_in_utc()
 		data_directory(now)
 		j = {'serial': serial, 'routes': routes}
-		with open('data/%s/%s.routes.%08d.json' % (now[0:7], now,  serial), 'w') as fd:
-			fd.write(json.dumps(j, indent=2))
+		with open('data/%s/%s.routes.%08d.json' % (now[0:7], now, serial), 'w') as fd:
+
+			class IPAddressEncoder(json.JSONEncoder):
+				"""RTR client"""
+
+				def default(self, obj):
+					if pytricia and isinstance(obj, pytricia.PyTricia):
+						a = {}
+						for prefix in obj:
+							a[prefix] = obj[prefix]
+						return a
+					if isinstance(obj, ipaddress.IPv4Network):
+						return str(obj)
+					if isinstance(obj, ipaddress.IPv6Network):
+						return str(obj)
+					return json.JSONEncoder.default(self, obj)
+
+			fd.write(json.dumps(j, indent=2, cls=IPAddressEncoder))
 		rtr_session.dump()
 		rtr_session.clear_routes()
-		sys.stderr.write('\nDUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' % (serial, len(routes['announce']), len(routes['withdraw'])))
+		sys.stderr.write('\nDUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' %
+				 (serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
 
 def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debug=0):
+	"""RTR client"""
+
 	rtr_session = rfc8210router(serial=serial, debug=debug)
 
 	if dump:
@@ -151,7 +187,7 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 		if not cache_fd:
 			sys.stderr.write('\nNO NETWORK CONNECTION\n')
 			sys.stderr.flush()
-			exit(1)	
+			sys.exit(1)
 
 		if serial == None or serial == 0:
 			packet = rtr_session.reset_query()
@@ -180,7 +216,7 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 			except KeyboardInterrupt:
 				sys.stderr.write('\nselect wait: ^C\n')
 				sys.stderr.flush()
-				exit(1)
+				sys.exit(1)
 			except Exception as e:
 				sys.stderr.write('\nselect wait: %s\n' % (e))
 				sys.stderr.flush()
@@ -223,15 +259,16 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 
 			if not p.do_hunk(rtr_session, v):
 				break
-	return
 
 def doit(args=None):
+	"""RTR client"""
+
 	debug = 0
 	dump = False
 	host = None
 	port = None
 	serial = None
-	timeout = 30 # thirty seconds for some random reason
+	timeout = 300 # five minutes for some random reason
 
 	usage = ('usage: rtr_client '
 		 + '[-H|--help] '
@@ -244,21 +281,20 @@ def doit(args=None):
 		 )
 
 	try:
-		opts, args = getopt.getopt(args,
-					   'Hvh:p:s:t:d',
-					   [
-					   	'help',
-					   	'version',
-					   	'host=', 'port=',
-						'serial=',
-						'timeout=',
-						'debug'
-					   ])
+		opts, args = getopt.getopt(args, 'Hvh:p:s:t:d', [
+			'help',
+			'version',
+			'host=', 'port=',
+			'serial=',
+			'timeout=',
+			'debug'
+			])
+
 	except getopt.GetoptError:
-		exit(usage)
+		sys.exit(usage)
 	for opt, arg in opts:
 		if opt in ('-H', '--help'):
-			exit(usage)
+			sys.exit(usage)
 		elif opt in ('-v', '--verbose'):
 			debug += 1
 		elif opt in ('-h', '--host'):
@@ -273,9 +309,11 @@ def doit(args=None):
 			dump = True
 
 	rtr_client(host=host, port=port, serial=serial, timeout=timeout, dump=dump, debug=debug)
-	exit(0)
+	sys.exit(0)
 
 def main(args=None):
+	"""RTR client"""
+
 	if args is None:
 		args = sys.argv[1:]
 	doit(args)
