@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 
 # the data files
+data/
+data/routingtable.json
+data/__________-raw-data.bin
 data/*/*.routes.[0-9]*.json
 
 # extras
