@@ -23,7 +23,7 @@ def main():
 		author='Martin J. Levy',
 		author_email='martin@cloudflare.com',
 		url='https://github.com/cloudflare/rpki-rtr-client',
-		license='MIT',
+		license='BSD 3',
 		packages=['rtr_client']+find_packages(),
 		include_package_data=True,
 		install_requires=['pytricia'],

@@ -112,5 +112,5 @@ The `file_process.py` command will process that file.
  - Added valid route table and show command
 
 ## LICENSE
-See LICENSE file.
+Licensed under the BSD 3 License. See [LICENSE.txt](LICENSE.txt) file.
 

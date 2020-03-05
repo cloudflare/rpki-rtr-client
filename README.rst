@@ -157,4 +157,5 @@ CHANGELOG
 LICENSE
 -------
 
-See LICENSE file.
+Licensed under the BSD 3 License. See `LICENSE.txt <LICENSE.txt>`__
+file.
