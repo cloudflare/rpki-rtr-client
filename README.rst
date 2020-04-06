@@ -32,7 +32,7 @@ Usage is via the ``--help`` argument.
 
 ::
 
-       $ ./rtr_client.py --help
+       $ rtr_client/rtr_client.py --help
        usage: rtr_client [-H|--help] [-v|--verbose] [-h|--host] hostname [-p|--port] portnumber [-s|--serial] serialnumber [-t|--timeout] seconds [-d|--dump] 
        $
 
@@ -42,7 +42,7 @@ command line ``-h|--host`` and ``-p|--port`` arguments.
 
 ::
 
-       $ ./rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
+       $ rtr_client/rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
        ...
        ^C
        $
@@ -127,7 +127,7 @@ Additionally, the full list of valid ROAs is dumped into
 
 ::
 
-       $ ./show.py 1.37.0.0/16 112.198.0.0/16
+       $ rtr_client/rtr_show.py 1.37.0.0/16 112.198.0.0/16
        ROUTE            ROA              MaxLen ASN
        1.37.0.0/16      1.37.0.0/16         /17 AS4775
        ROUTE            ROA              MaxLen ASN
@@ -153,6 +153,12 @@ CHANGELOG
 -  All internal cidr's are stored as ``ipaddress`` types and JSON
    processing now handles that type correctly
 -  Added valid route table and show command
+-  Renamed show.py to rtr\_show.py
+-  moved code to rtr\_client folder
+-  Added -V/--version flags
+-  Added support for tracking session\_id's
+-  Fixed route dump duplication after session restart
+-  First pass at pypi packaging
 
 LICENSE
 -------

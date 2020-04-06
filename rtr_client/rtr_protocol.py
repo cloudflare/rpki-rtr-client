@@ -10,7 +10,7 @@ from rtr_routes import RoutingTable
 class rfc8210router(object):
 	"""RTR RFC 8210 protocol"""
 
-	def __init__(self, serial=None, session_id=0, debug=0):
+	def __init__(self, serial=None, session_id=None, debug=0):
 		"""RTR RFC 8210 protocol"""
 
 		self.time_next_refresh = None
@@ -21,7 +21,10 @@ class rfc8210router(object):
 		else:
 			self.logger = None
 
-		self._current_session_id = session_id
+		if session_id:
+			self._current_session_id = session_id
+		else:
+			self._current_session_id = None
 		self.serial_number = {'latest': 0, 'cache': 0}
 		if serial:
 			self.serial_number['cache'] = int(serial)	# should be read from data
@@ -157,7 +160,7 @@ class rfc8210router(object):
 
 		if pdu_type == 3:
 			# Cache Response
-			self._debug_('Cache Response: current_session_id=%d session_id=%d' % (self._current_session_id, session_id))
+			self._debug_('Cache Response: current_session_id=%s session_id=%d' % (self._current_session_id, session_id))
 			self._current_session_id = session_id
 			return True
 
@@ -310,6 +313,11 @@ class rfc8210router(object):
 		reset_query = b'\x01\x02\x00\x00' + b'\x00\x00\x00\x08'
 		return reset_query
 
+	def get_session_id(self):
+		"""RTR RFC 8210 protocol"""
+
+		return self._current_session_id
+
 	def latest_serial_number(self):
 		"""RTR RFC 8210 protocol"""
 
@@ -369,4 +377,6 @@ class rfc8210router(object):
 		"""RTR RFC 8210 protocol"""
 
 		self._routes = {'announce': [], 'withdraw': []}
+		if self._routingtable:
+			self._routingtable.clear()
 

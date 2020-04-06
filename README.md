@@ -20,7 +20,7 @@ Cloudflare provides an open RTR server at `rtr.rpki.cloudflare.com` port `8282` 
 
 Usage is via the `--help` argument.
 ```
-   $ ./rtr_client.py --help
+   $ rtr_client/rtr_client.py --help
    usage: rtr_client [-H|--help] [-v|--verbose] [-h|--host] hostname [-p|--port] portnumber [-s|--serial] serialnumber [-t|--timeout] seconds [-d|--dump] 
    $
 ```
@@ -28,7 +28,7 @@ Usage is via the `--help` argument.
 The Cloudflare open RTR server default hostname and port are compiled into the source code.
 You can specify your own host and port via the command line `-h|--host` and `-p|--port` arguments.
 ```
-   $ ./rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
+   $ rtr_client/rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
    ...
    ^C
    $
@@ -91,7 +91,7 @@ You can list the ROAs. A `null` mean that no MaxLen has been specified in the RO
 ```
 Additionally, the full list of valid ROAs is dumped into `data/routingtable.json` which can then be used the `show` command:
 ```
-   $ ./show.py 1.37.0.0/16 112.198.0.0/16
+   $ rtr_client/rtr_show.py 1.37.0.0/16 112.198.0.0/16
    ROUTE            ROA              MaxLen ASN
    1.37.0.0/16      1.37.0.0/16         /17 AS4775
    ROUTE            ROA              MaxLen ASN
@@ -110,6 +110,12 @@ The `file_process.py` command will process that file.
  - Moved from 3rd party `netaddr` package to Python's `ipaddress` data type
  - All internal cidr's are stored as `ipaddress` types and JSON processing now handles that type correctly
  - Added valid route table and show command
+ - Renamed show.py to rtr_show.py
+ - moved code to rtr_client folder
+ - Added -V/--version flags
+ - Added support for tracking session_id's
+ - Fixed route dump duplication after session restart
+ - First pass at pypi packaging
 
 ## LICENSE
 Licensed under the BSD 3 License. See [LICENSE.txt](LICENSE.txt) file.

@@ -17,6 +17,7 @@ except:
 	pytricia = None
 
 from rtr_protocol import rfc8210router
+from __init__ import __version__
 
 #
 # rtr protocol - port 8282 - clear text - Cisco, Juniper
@@ -164,7 +165,7 @@ def dump_routes(rtr_session, serial):
 				 (serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
 
-def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debug=0):
+def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None, dump=False, debug=0):
 	"""RTR client"""
 
 	rtr_session = rfc8210router(serial=serial, debug=debug)
@@ -200,6 +201,21 @@ def rtr_client(host=None, port=None, serial=None, timeout=None, dump=False, debu
 		rtr_session.process(packet)
 
 		while True:
+
+			# At every oppertunity, see if we have a new session_id number
+			new_session_id = rtr_session.get_session_id()
+			if new_session_id:
+				if session_id == None:
+					sys.stderr.write('NEW SESSION ID %d\n' % (new_session_id))
+					sys.stderr.flush()
+					# update session_id number
+					session_id = new_session_id
+				else:
+					if new_session_id != session_id:
+						sys.stderr.write('NEW SESSION ID %d->%d\n' % (session_id, new_session_id))
+						sys.stderr.flush()
+						# update session_id number
+						session_id = new_session_id
 
 			# At every oppertunity, see if we have a new serial number
 			new_serial = rtr_session.cache_serial_number()
@@ -272,6 +288,7 @@ def doit(args=None):
 
 	usage = ('usage: rtr_client '
 		 + '[-H|--help] '
+		 + '[-V|--version] '
 		 + '[-v|--verbose] '
 		 + '[-h|--host] hostname '
 		 + '[-p|--port] portnumber '
@@ -281,20 +298,23 @@ def doit(args=None):
 		 )
 
 	try:
-		opts, args = getopt.getopt(args, 'Hvh:p:s:t:d', [
+		opts, args = getopt.getopt(args, 'HVvh:p:s:t:d', [
 			'help',
 			'version',
+			'verbose',
 			'host=', 'port=',
 			'serial=',
 			'timeout=',
 			'debug'
 			])
-
 	except getopt.GetoptError:
 		sys.exit(usage)
+
 	for opt, arg in opts:
 		if opt in ('-H', '--help'):
 			sys.exit(usage)
+		if opt in ('-V', '--version'):
+			sys.exit('%s: version: %s' % (sys.argv[0], __version__))
 		elif opt in ('-v', '--verbose'):
 			debug += 1
 		elif opt in ('-h', '--host'):

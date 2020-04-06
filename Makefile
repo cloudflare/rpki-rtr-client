@@ -44,7 +44,7 @@ upload-github:
 	git push
 
 lint:
-	$(PYLINT) CloudFlare cli4
+	$(PYLINT) rtr_client
 
 clean:
 	rm -rf build

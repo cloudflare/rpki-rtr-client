@@ -29,6 +29,10 @@ def main():
 		install_requires=['pytricia'],
 		keywords='RFC9210, RPKI, RTR, Cloudflare',
 		entry_points={
+			'console_scripts': [
+				'rtr_client=rtr_client.__main__:main',
+				'rtr_show=rtr_client.rtr_show.__main__:main',
+			]
 		},
 		classifiers=[
 			'Development Status :: 5 - Production/Stable',

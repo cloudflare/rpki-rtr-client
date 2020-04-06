@@ -71,6 +71,11 @@ class RoutingTable(object):
 
 		self._dump()
 
+	def clear(self):
+		"""RTR protocol basic Routing Table support"""
+
+		self._clear()
+
 	def show(self, cidr, show_long=False):
 		"""RTR protocol basic Routing Table support"""
 
