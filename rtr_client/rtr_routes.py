@@ -66,10 +66,10 @@ class RoutingTable(object):
 		# clearly we didn't find the route you are trying to withdraw
 		raise IndexError("withdraw: %s %s %s" % (cidr,asn,maxlen))
 
-	def dump(self):
+	def save_routing_table(self):
 		"""RTR protocol basic Routing Table support"""
 
-		self._dump()
+		self._save_routing_table()
 
 	def clear(self):
 		"""RTR protocol basic Routing Table support"""
@@ -118,7 +118,7 @@ class RoutingTable(object):
 						s_maxlen = '/' + str(maxlen)
 					print("%-16s %-16s %6s %s" % (cidr, route, s_maxlen, 'AS' + str(asn)))
 
-	def _dump(self):
+	def _save_routing_table(self):
 		"""RTR protocol basic Routing Table support"""
 
 		j = {'routes': {'ipv4': self._ipv[4], 'ipv6': self._ipv[6]}}

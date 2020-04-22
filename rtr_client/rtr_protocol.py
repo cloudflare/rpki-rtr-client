@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """RTR RFC 8210 protocol"""
 
+import sys
 import time
 import ipaddress
 
@@ -23,8 +24,10 @@ class rfc8210router(object):
 
 		if session_id:
 			self._current_session_id = session_id
+			self._current_session_id_exists = True
 		else:
 			self._current_session_id = None
+			self._current_session_id_exists = False
 		self.serial_number = {'latest': 0, 'cache': 0}
 		if serial:
 			self.serial_number['cache'] = int(serial)	# should be read from data
@@ -39,6 +42,7 @@ class rfc8210router(object):
 			self._routingtable = RoutingTable()
 		except:
 			# this handles the case where RoutingTable() isn't configured correctly
+			self._routingtable = None
 			pass
 		self.clear_routes()
 
@@ -120,14 +124,20 @@ class rfc8210router(object):
 			else:
 				self._routes['announce'] += [{'ip': cidr, 'asn': asn}]
 			if self._routingtable:
-				self._routingtable.announce(cidr, asn, maxlen)
+				try:
+					self._routingtable.announce(cidr, asn, maxlen)
+				except:
+					sys.stderr.write("announce(%s, %s, %s) - failed\n" % (cidr, asn, maxlen))
 		else:
 			if maxlen:
 				self._routes['withdraw'] += [{'ip': cidr, 'asn': asn, 'maxlen': maxlen}]
 			else:
 				self._routes['withdraw'] += [{'ip': cidr, 'asn': asn}]
-			if self._routingtable:
-				self._routingtable.withdraw(cidr, asn, maxlen)
+			try:
+				if self._routingtable:
+					self._routingtable.withdraw(cidr, asn, maxlen)
+			except:
+				sys.stderr.write("withdraw(%s, %s, %s) - failed\n" % (cidr, asn, maxlen))
 
 	def _convert_to_hms(self, secs):
 		"""RTR RFC 8210 protocol"""
@@ -162,6 +172,7 @@ class rfc8210router(object):
 			# Cache Response
 			self._debug_('Cache Response: current_session_id=%s session_id=%d' % (self._current_session_id, session_id))
 			self._current_session_id = session_id
+			self._current_session_id_exists = True
 			return True
 
 		if pdu_type == 4 or pdu_type == 6:
@@ -316,7 +327,9 @@ class rfc8210router(object):
 	def get_session_id(self):
 		"""RTR RFC 8210 protocol"""
 
-		return self._current_session_id
+		if self._current_session_id_exists:
+			return self._current_session_id
+		raise ValueError
 
 	def latest_serial_number(self):
 		"""RTR RFC 8210 protocol"""
@@ -362,11 +375,11 @@ class rfc8210router(object):
 		self.time_set_refresh(15)
 		return False
 
-	def dump(self):
+	def save_routing_table(self):
 		"""RTR RFC 8210 protocol"""
 
 		if self._routingtable:
-			self._routingtable.dump()
+			self._routingtable.save_routing_table()
 
 	def routes(self):
 		"""RTR RFC 8210 protocol"""
@@ -377,6 +390,7 @@ class rfc8210router(object):
 		"""RTR RFC 8210 protocol"""
 
 		self._routes = {'announce': [], 'withdraw': []}
-		if self._routingtable:
-			self._routingtable.clear()
+		# turns out you don't clear the routing table
+		#if self._routingtable:
+		#	self._routingtable.clear()
 

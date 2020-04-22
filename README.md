@@ -116,6 +116,9 @@ The `file_process.py` command will process that file.
  - Added support for tracking session_id's
  - Fixed route dump duplication after session restart
  - First pass at pypi packaging
+ - Cleaned up route processing
+ - Timestamp added to major debug messages
+ - Connect class does all the socket processing now - just cleaner that way
 
 ## LICENSE
 Licensed under the BSD 3 License. See [LICENSE.txt](LICENSE.txt) file.

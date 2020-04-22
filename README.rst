@@ -159,6 +159,10 @@ CHANGELOG
 -  Added support for tracking session\_id's
 -  Fixed route dump duplication after session restart
 -  First pass at pypi packaging
+-  Cleaned up route processing
+-  Timestamp added to major debug messages
+-  Connect class does all the socket processing now - just cleaner that
+   way
 
 LICENSE
 -------
