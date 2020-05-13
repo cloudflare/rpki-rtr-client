@@ -29,13 +29,13 @@ class RoutingTable(object):
 			self._ipv[version].insert(cidr, {})
 		if maxlen not in self._ipv[version][cidr]:
 			# we know we can enter the data raw and be done!
-			self._ipv[version][cidr][maxlen] = [{asn:str(cidr)}]
+			self._ipv[version][cidr][maxlen] = [{asn:cidr}]
 			return
 
 		if asn in self._ipv[version][cidr][maxlen]:
 			raise Exception("announce1: %s %s %s" % (cidr,asn,maxlen))
 		try:
-			self._ipv[version][cidr][maxlen] += [{asn:str(cidr)}]
+			self._ipv[version][cidr][maxlen] += [{asn:cidr}]
 		except:
 			raise Exception("announce2: %s %s %s" % (cidr,asn,maxlen))
 			# asn already in there
@@ -92,7 +92,7 @@ class RoutingTable(object):
 					else:
 						r_temp[maxlen] = rr[maxlen]
 				for child in self._ipv[version].children(cidr):
-					rr = self._ipv[version][ipaddress.IPv4Network(child)]
+					rr = self._ipv[version][child]
 					for maxlen in list(rr.keys()):
 						if maxlen in r_temp:
 							r_temp[maxlen] += rr[maxlen]
@@ -111,7 +111,7 @@ class RoutingTable(object):
 				all_routes = r[maxlen]
 				for pp in all_routes:
 					asn = list(pp)[0]
-					route = ipaddress.IPv4Network(pp[asn])
+					route = pp[asn]
 					if maxlen == route.prefixlen:
 						s_maxlen = ''
 					else:
