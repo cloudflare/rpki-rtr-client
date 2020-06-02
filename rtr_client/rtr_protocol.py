@@ -5,8 +5,12 @@ import sys
 import time
 import ipaddress
 
-from rtr_logging import rfc8210logger
-from rtr_routes import RoutingTable
+try:
+	from rtr_logging import rfc8210logger
+	from rtr_routes import RoutingTable
+except ImportError:
+	from .rtr_logging import rfc8210logger
+	from .rtr_routes import RoutingTable
 
 class rfc8210router(object):
 	"""RTR RFC 8210 protocol"""

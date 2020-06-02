@@ -30,8 +30,8 @@ def main():
 		keywords='RFC9210, RPKI, RTR, Cloudflare',
 		entry_points={
 			'console_scripts': [
-				'rtr_client=rtr_client.__main__:main',
-				'rtr_show=rtr_client.rtr_show.__main__:main',
+				'rtr_client=rtr_client.rtr_client:main',
+				'rtr_show=rtr_client.rtr_show:main',
 			]
 		},
 		classifiers=[

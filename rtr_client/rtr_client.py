@@ -17,8 +17,13 @@ try:
 except:
 	pytricia = None
 
-from rtr_protocol import rfc8210router
-from __init__ import __version__
+try:
+	from rtr_protocol import rfc8210router
+	from __init__ import __version__
+except ImportError:
+	from .rtr_protocol import rfc8210router
+	from .__init__ import __version__
+	
 
 #
 # rtr protocol - port 8282 - clear text - Cisco, Juniper
