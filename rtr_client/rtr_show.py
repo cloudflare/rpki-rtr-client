@@ -44,7 +44,7 @@ def doit(args=None):
 		 + '[-H|--help] '
 		 + '[-V|--version] '
 		 + '[-v|--verbose] '
-		 + '[-f|--file] filename '
+		 + '[-f|--file=FILENAME] '
 		 + '[-l|--long] '
 		 + 'route'
 		 )
