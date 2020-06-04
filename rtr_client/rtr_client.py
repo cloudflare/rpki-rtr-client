@@ -69,11 +69,13 @@ class Connect(object):
 		time.sleep(n)
 
 	def _connect(self):
+		family, type, proto, canonname, sockaddr = socket.getaddrinfo(self.rtr_host, self.rtr_port, 0, 0, socket.SOL_TCP)[0]
+
 		for ii in [1, 2, 4, 8, 16, 32]:
 			try:
-				fd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				fd = socket.socket(family, socket.SOCK_STREAM)
 				fd.settimeout(self.connect_timeout)
-				fd.connect((self.rtr_host, self.rtr_port))
+				fd.connect(sockaddr)
 				return fd
 			except KeyboardInterrupt:
 				sys.stderr.write('socket connection: ^C\n')
