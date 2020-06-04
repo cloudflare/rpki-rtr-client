@@ -57,9 +57,25 @@ class rfc8210router(object):
 
 		protocol_version = int(d[0])
 		pdu_type = int(d[1])
-		session_id = int(d[2]) * 256 + int(d[3])
-		# self._debug_('%-16s %d%-16s %d%-16s %d' % ('Protocol Version', protocol_version, 'PDU Type', pdu_type, 'Session ID', session_id))
-		return pdu_type, session_id
+		if pdu_type in [0,1,3,7]:
+			session_id = int(d[2]) * 256 + int(d[3])
+			header_flags = None
+			#self._debug_('Protocol Version=%d PDU Type=%d Session ID=%d' % (protocol_version, pdu_type, session_id))
+		if pdu_type in [2,4,6,8]:
+			session_id = None
+			header_flags = None
+			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
+		if pdu_type in [5]:
+			# not used! should not be seen
+			session_id = None
+			header_flags = None
+			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
+		if pdu_type in [9]:
+			session_id = None
+			header_flags = None
+			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
+
+		return pdu_type, session_id, header_flags
 
 	def _read_u32bits(self, d):
 		"""RTR RFC 8210 protocol"""
@@ -144,17 +160,20 @@ class rfc8210router(object):
 
 		return time.strftime('%H:%M:%S', time.gmtime(secs))
 
-	def _process_pdu(self, pdu_type, session_id, d):
+	def _process_pdu(self, pdu_type, session_id, header_flags, d):
 		"""RTR RFC 8210 protocol"""
 
 		if pdu_type == 0:
 			# Serial Notify
 			serial = self._read_u32bits(d[0:4])
-			self._debug_('Serial Notify: cache_current_serial=%d latest_current_serial=%d serial=%d' % (
+			self._debug_('Serial Notify: cache_current_serial=%d latest_current_serial=%d serial=%d current_session_id=%s session_id=%d' % (
 								self.cache_serial_number(),
 								self.latest_serial_number(),
-								serial))
+								serial,
+								self._current_session_id,
+								session_id))
 			self.set_latest_serial_number(serial)
+			self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 1:
@@ -171,8 +190,7 @@ class rfc8210router(object):
 		if pdu_type == 3:
 			# Cache Response
 			self._debug_('Cache Response: current_session_id=%s session_id=%d' % (self._current_session_id, session_id))
-			self._current_session_id = session_id
-			self._current_session_id_exists = True
+			self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 4 or pdu_type == 6:
@@ -209,9 +227,10 @@ class rfc8210router(object):
 			self._refresh_interval = self._read_u32bits(d[4:8])
 			self._retry_interval = self._read_u32bits(d[8:12])
 			self._expire_interval = self._read_u32bits(d[12:16])
-			self._debug_('End of Data: n_routes=%d/%d serial=%d refresh=%s retry=%s expire=%s' % (
+			self._debug_('End of Data: n_routes=%d/%d session_id=%d serial=%d refresh=%s retry=%s expire=%s' % (
 													len(self._routes['announce']),
 													len(self._routes['withdraw']),
+													session_id,
 													latest_serial_number,
 													self._convert_to_hms(self._refresh_interval),
 													self._convert_to_hms(self._retry_interval),
@@ -220,6 +239,7 @@ class rfc8210router(object):
 			self.set_latest_serial_number(latest_serial_number)
 			self.set_cache_serial_number(latest_serial_number)
 			self.time_set_refresh(self._refresh_interval)
+			## self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 8:
@@ -257,7 +277,7 @@ class rfc8210router(object):
 				# self._debug_('DATA EXPIRED: not enough for eight bytes')
 				break
 			d = packet_buffer[data_index:data_index + 4]
-			pdu_type, session_id = self._read_first4bytes(d)
+			pdu_type, session_id, header_flags = self._read_first4bytes(d)
 
 			d = packet_buffer[data_index + 4:data_index + 8]
 			packet_length = self._read_4byte_length(d)
@@ -271,7 +291,7 @@ class rfc8210router(object):
 			d = packet_buffer[data_index + 8:data_index+packet_length]
 			data_index = data_index + packet_length
 
-			if not self._process_pdu(pdu_type, session_id, d):
+			if not self._process_pdu(pdu_type, session_id, header_flags, d):
 				break
 
 		if data_index != data_index_max:
@@ -330,6 +350,12 @@ class rfc8210router(object):
 		if self._current_session_id_exists:
 			return self._current_session_id
 		raise ValueError
+
+	def set_session_id(self, session_id):
+		"""RTR RFC 8210 protocol"""
+
+		self._current_session_id_exists = True
+		self._current_session_id = session_id
 
 	def latest_serial_number(self):
 		"""RTR RFC 8210 protocol"""

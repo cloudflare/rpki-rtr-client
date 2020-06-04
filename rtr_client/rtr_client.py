@@ -152,16 +152,16 @@ def data_directory(now):
 	except FileExistsError:
 		pass
 
-def dump_routes(rtr_session, serial):
+def dump_routes(rtr_session, serial, session_id):
 	"""RTR client"""
 
-	# dump present routes into file based on serial number
+	# dump present routes into file based on serial number and session_id
 	routes = rtr_session.routes()
 	if len(routes['announce']) > 0 or len(routes['withdraw']) > 0:
 		now = now_in_utc()
 		data_directory(now)
-		j = {'serial': serial, 'routes': routes}
-		with open('data/%s/%s.routes.%08d.json' % (now[0:7], now, serial), 'w') as fd:
+		j = {'serial': serial, 'session_id': session_id, 'routes': routes}
+		with open('data/%s/%s.routes.%08d.%08d.json' % (now[0:7], now, session_id, serial), 'w') as fd:
 
 			class IPAddressEncoder(json.JSONEncoder):
 				"""RTR client"""
@@ -182,8 +182,8 @@ def dump_routes(rtr_session, serial):
 
 		# clean up from this serial number
 		rtr_session.clear_routes()
-		sys.stderr.write('%s: DUMP ROUTES: serial=%d announce=%d/withdraw=%d\n' %
-				 (now_in_utc(), serial, len(routes['announce']), len(routes['withdraw'])))
+		sys.stderr.write('%s: DUMP ROUTES: session_id=%d serial=%d announce=%d/withdraw=%d\n' %
+				 (now_in_utc(), session_id, serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
 
 		# dump the full routing table
@@ -249,10 +249,14 @@ def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None,
 			# At every oppertunity, see if we have a new serial number
 			new_serial = rtr_session.cache_serial_number()
 			if new_serial != serial:
-				sys.stderr.write('\n%s: NEW SERIAL %d->%d\n' % (now_in_utc(), serial, new_serial))
+				try:
+					temp_session_id = rtr_session.get_session_id()
+				except ValueError:
+					temp_session_id = 0
+				sys.stderr.write('\n%s: SESSION %d NEW SERIAL %d->%d\n' % (now_in_utc(), temp_session_id, serial, new_serial))
 				sys.stderr.flush()
 				# dump present routes into file based on serial number
-				dump_routes(rtr_session, new_serial)
+				dump_routes(rtr_session, new_serial, temp_session_id)
 				# update serial number
 				serial = new_serial
 
