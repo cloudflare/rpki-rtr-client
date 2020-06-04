@@ -1,15 +1,11 @@
 
 PYTHON = python
-PANDOC = pandoc
 PYLINT = pylint
 
 EMAIL = "mahtin@mahtin.com"
 NAME = "rpki-rtr-client"
 
 all:	README.rst build
-
-README.rst: README.md
-	$(PANDOC) --from=markdown --to=rst < README.md > README.rst 
 
 FORCE:
 
