@@ -6,8 +6,13 @@ import json
 
 import ipaddress
 
-from rtr_routes import RoutingTable
-from __init__ import __version__
+try:
+	from rtr_routes import RoutingTable
+	from __init__ import __version__
+except ImportError:
+	from .rtr_routes import RoutingTable
+	from .__init__ import __version__
+
 
 def read_file(routingtable, filename, debug):
 	count = 0
@@ -39,7 +44,7 @@ def doit(args=None):
 		 + '[-H|--help] '
 		 + '[-V|--version] '
 		 + '[-v|--verbose] '
-		 + '[-f|--file] filename '
+		 + '[-f|--file=FILENAME] '
 		 + '[-l|--long] '
 		 + 'route'
 		 )

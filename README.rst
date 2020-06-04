@@ -1,29 +1,32 @@
 rpki-rtr-client
 ===============
 
-INTRODUCTION
+Introduction
 ------------
 
 A simple client-side implementation of the RTR
 `RFC8210 <https://tools.ietf.org/html/rfc8210>`__ protocol in Python.
 See Cloudflare's blogs on
 `RPKI <https://blog.cloudflare.com/tag/rpki/>`__ for more open source
-RPKI code. ## INSTALL Presently the code is easiest to install via
-github.
+RPKI code.
+
+Installation
+------------
+
+Presently the code is easiest to install using pip.
 
 ::
 
-       $ pip3 install pytricia
-       ...
-       $
-
-       $ git clone https://github.com/cloudflare/rpki-rtr-client.git
-       ...
-       $ cd rpki-rtr-client
-       $
+       $ pip3 install rpki-rtr-client
+       $ rtr_client
 
 The `pytricia <https://pypi.org/project/pytricia/>`__ package is used
-for storing a routing table. ## USAGE Cloudflare provides an open RTR
+for storing a routing table.
+
+Usage
+-----
+
+Cloudflare provides an open RTR
 server at ``rtr.rpki.cloudflare.com`` port ``8282`` based on
 Cloudflare's `GoRTR <https://github.com/cloudflare/gortr>`__ open source
 RTR server.
@@ -32,9 +35,8 @@ Usage is via the ``--help`` argument.
 
 ::
 
-       $ rtr_client/rtr_client.py --help
-       usage: rtr_client [-H|--help] [-v|--verbose] [-h|--host] hostname [-p|--port] portnumber [-s|--serial] serialnumber [-t|--timeout] seconds [-d|--dump] 
-       $
+       $ rtr_client --help
+       usage: rtr_client [-H|--help] [-V|--version] [-v|--verbose] [-h|--host=HOSTNAME] [-p|--port=PORTNUMBER] [-s|--serial=SERIALNUMER] [-t|--timeout=SECONDS] [-d|--dump]
 
 The Cloudflare open RTR server default hostname and port are compiled
 into the source code. You can specify your own host and port via the
@@ -42,7 +44,7 @@ command line ``-h|--host`` and ``-p|--port`` arguments.
 
 ::
 
-       $ rtr_client/rtr_client.py --host rtr.rpki.cloudflare.com --port 8282
+       $ rtr_client --host rtr.rpki.cloudflare.com --port 8282
        ...
        ^C
        $
@@ -68,7 +70,7 @@ routing list.
 The ``.`` debug message simply mean that PDUs have been transfered
 between RTR server and RTR client.
 
-DATA FILES
+Data Files
 ----------
 
 There's a data directory created with JSON files of every serial numbers
@@ -141,7 +143,7 @@ to debug the protocol with the ``-d|--dump`` argument. This generates a
 ``data/__________-raw-data.bin`` file. The ``file_process.py`` command
 will process that file.
 
-CHANGELOG
+Changelog
 ---------
 
 -  This is the first release and while it works, it is not ready for
@@ -164,7 +166,7 @@ CHANGELOG
 -  Connect class does all the socket processing now - just cleaner that
    way
 
-LICENSE
+License
 -------
 
 Licensed under the BSD 3 License. See `LICENSE.txt <LICENSE.txt>`__

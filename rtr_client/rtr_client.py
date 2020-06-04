@@ -17,8 +17,13 @@ try:
 except:
 	pytricia = None
 
-from rtr_protocol import rfc8210router
-from __init__ import __version__
+try:
+	from rtr_protocol import rfc8210router
+	from __init__ import __version__
+except ImportError:
+	from .rtr_protocol import rfc8210router
+	from .__init__ import __version__
+	
 
 #
 # rtr protocol - port 8282 - clear text - Cisco, Juniper
@@ -336,10 +341,10 @@ def doit(args=None):
 		 + '[-H|--help] '
 		 + '[-V|--version] '
 		 + '[-v|--verbose] '
-		 + '[-h|--host] hostname '
-		 + '[-p|--port] portnumber '
-		 + '[-s|--serial] serialnumber '
-		 + '[-t|--timeout] seconds '
+		 + '[-h|--host=HOSTNAME] '
+		 + '[-p|--port=PORTNUMBER] '
+		 + '[-s|--serial=SERIALNUMBER] '
+		 + '[-t|--timeout=SECONDS] '
 		 + '[-d|--dump] '
 		 )
 
