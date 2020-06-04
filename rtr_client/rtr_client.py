@@ -341,10 +341,10 @@ def doit(args=None):
 		 + '[-H|--help] '
 		 + '[-V|--version] '
 		 + '[-v|--verbose] '
-		 + '[-h|--host=HOSTNAME] '
-		 + '[-p|--port=PORTNUMBER] '
-		 + '[-s|--serial=SERIALNUMBER] '
-		 + '[-t|--timeout=SECONDS] '
+		 + '[-h HOSTNAME|--host=HOSTNAME] '
+		 + '[-p PORTNUMBER|--port=PORTNUMBER] '
+		 + '[-s SERIALNUMBER|--serial=SERIALNUMBER] '
+		 + '[-t SECONDS|--timeout=SECONDS] '
 		 + '[-d|--dump] '
 		 )
 

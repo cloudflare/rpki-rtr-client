@@ -36,7 +36,7 @@ Usage is via the ``--help`` argument.
 ::
 
        $ rtr_client --help
-       usage: rtr_client [-H|--help] [-V|--version] [-v|--verbose] [-h|--host=HOSTNAME] [-p|--port=PORTNUMBER] [-s|--serial=SERIALNUMER] [-t|--timeout=SECONDS] [-d|--dump]
+       usage: rtr_client [-H|--help] [-V|--version] [-v|--verbose] [-h HOSTNAME|--host=HOSTNAME] [-p PORTNUMBER|--port=PORTNUMBER] [-s SERIALNUMBER|--serial=SERIALNUMER] [-t SECONDS|--timeout=SECONDS] [-d|--dump]
 
 The Cloudflare open RTR server default hostname and port are compiled
 into the source code. You can specify your own host and port via the
