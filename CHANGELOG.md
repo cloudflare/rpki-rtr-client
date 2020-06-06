@@ -1,46 +1,47 @@
 # Change Log
 
- - 2020-06-06 14:51:59 -0700 [bb8ad13](commit/bb8ad13e51881ad7f81d9f135940e9b781f72446) added CHANGELOG file
- - 2020-06-06 14:50:24 -0700 [de0a49b](commit/de0a49bcb8a46a1b9b82dc5580ee54012b41c5c3) 1.2.0 release
- - 2020-06-06 14:46:48 -0700 [a34dc27](commit/a34dc2711d5d1f0c9c9682152f04fbf376939c27) pylint, session id, router key, binary protocol code, debug strings  - all improved
- - 2020-06-06 14:44:49 -0700 [f1bdc8f](commit/f1bdc8f5a90b1adbc77aa9cbe69faab34774b9a1) pylint, session id, socket connect, ^C handling - all improved
- - 2020-06-06 12:12:48 -0700 [0e4c579](commit/0e4c5798b13c468c60d58811a8890b555d078c78) pylint kept happy - well somewhat happy
- - 2020-06-06 12:12:36 -0700 [c50ad98](commit/c50ad98a2e361e5e858374006422dabaa8d35001) pylint kept happy - well somewhat happy
- - 2020-06-06 12:12:11 -0700 [5a16aef](commit/5a16aeffb4e0aec28debe1b6b7ae40eaafaee48c) pylint kept happy - well somewhat happy
- - 2020-06-06 12:11:44 -0700 [333c0bb](commit/333c0bb67bdb3a7e2aae6285aec65d4792d07a6d) pylint kept happy - well somewhat happy
- - 2020-06-06 12:11:27 -0700 [10e0ae3](commit/10e0ae321621073a5e5a608cdb235074eaa0d9e3) pylint kept happy - well somewhat happy
- - 2020-06-06 12:11:04 -0700 [911d6dc](commit/911d6dc445793b2be2398cb1a77c01f4e2857e6c) pylint kept happy - well somewhat happy
- - 2020-06-06 11:53:41 -0700 [393a0f2](commit/393a0f2f214ab2eb2364d3ab2fb4e3c721dcdbe8) pylint kept happy - well somewhat happy
- - 2020-06-05 17:45:28 -0700 [b0096cd](commit/b0096cdce6adb617f7d3b59dd978cb8232dec53d) added debug for tracking down SESSION ID issues
- - 2020-06-04 12:22:05 -0700 [f2dc421](commit/f2dc421cc121079952f4237a78bbd7d7989aa920) removed unused README build code
- - 2020-06-04 12:19:47 -0700 [e6f0b81](commit/e6f0b8179c25b78f64ad0369636d890eed0572d0) minor update to usage string
- - 2020-06-04 12:15:34 -0700 [1041e84](commit/1041e84165d6edb46c6d93cfd005873da6cad500) Merge pull request #7 from oskar456/fix_pypi_package
- - 2020-06-04 12:09:31 -0700 [34989a2](commit/34989a22208d9f2689a3ca0dea692b28af70f833) upped version number after pull/8
- - 2020-06-04 12:06:56 -0700 [69a9bf9](commit/69a9bf9372e74c3aabfc63ee716cc4e854a01cba) Merge pull request #8 from gmarsay/ipv6-support
- - 2020-06-04 12:05:36 -0700 [158000d](commit/158000d84e9c4ae3f6ed880565d3310d850f8442) added and fixed support for Session ID - see RFC
- - 2020-06-04 17:35:03 +0200 [22058a5](commit/22058a560d0f6b603e17664b5318ad396f982cc0) Add support for IPv6
- - 2020-06-02 09:56:17 +0200 [1fef4ae](commit/1fef4aee3595426debd3f91951c5e3806439fccf) Keep only RST documentation, fix command line help
- - 2020-06-02 09:31:35 +0200 [a5c7eeb](commit/a5c7eeb87ddeebe22ed0586c9e29c0d67224851c) Make the package work out of the box when installed with pip3
- - 2020-05-12 17:07:11 -0700 [7a8c723](commit/7a8c7234b5e13b26513cb46b4c59306b26d8653c) 1.0.5 release - still testing
- - 2020-05-12 17:05:08 -0700 [014dbca](commit/014dbca6cf5a0dbdf0e94ff4d30cb1350572bb15) cleaned up use of ipaddress types - actually less code
- - 2020-04-22 14:12:05 -0700 [0e86a4c](commit/0e86a4c911e9d28a257b33762fde734ad08ef9fe) 1.0.4 release - still testing
- - 2020-04-22 14:10:04 -0700 [f8f21c1](commit/f8f21c11f7cb73ecda0e473c9305648f8509b9f4) cleaned up route processing, timestamps in message
- - 2020-04-06 11:36:31 -0700 [5c081ca](commit/5c081ca8f5935b69c5265e5f9fe76d112aaa36d4) moved code to rtr_client folder, added session_id code, renamed show to rtr_show, fixed dump duplication
- - 2020-03-04 20:43:12 -0800 [ced1ec6](commit/ced1ec6aa29931d93ecbfc2fcc2d2c993ab08e68) updated and corrected license - issue #2
- - 2020-02-28 23:47:21 -0800 [c814ac7](commit/c814ac7a198393ef0b3a2f7f73253006a81c80e4) pypi packaging added - but not complete
- - 2020-02-28 23:46:23 -0800 [bda6258](commit/bda62580f177e99d6e2c6bfcec72fdcdec5efa35) pypi packaging added
- - 2020-02-28 23:12:35 -0800 [9f92c32](commit/9f92c32d46c388883558a63e895e5b9d9e53a9e2) /data/ correctly defined
- - 2020-02-28 23:11:21 -0800 [b52616a](commit/b52616a092d70701ca1ac4bebeed6f10dfca2204) added more documentation
- - 2020-02-28 23:11:07 -0800 [21ac8b3](commit/21ac8b353b2dca6805735aa2f1a35a276c922a5d) typo
- - 2020-02-28 23:04:51 -0800 [9422f23](commit/9422f23857b97e7fe863eb2a02b1dae4c65fe2c7) added ROA table and show command. moved from netaddr to ipaddress. json file now pretty. added more documentation.
- - 2020-02-19 20:36:55 -0800 [d17308e](commit/d17308e0e2c32163c7d68c0e52bcc582e6bb9a18) decided to cleanly format json file. added new route dump logic
- - 2020-02-17 13:48:31 -0800 [9eb9122](commit/9eb9122bd2ba057c60fe4d96af00324d4225d2f9) Merge pull request #1 from ties/fix/data_directory_requires_name
- - 2020-02-17 14:43:11 +0100 [562a884](commit/562a884efff0691e7b86ead20883b5d7d4039d51) Pass in now to data_directory function
- - 2020-02-16 21:21:51 -0800 [15726eb](commit/15726ebaf5e293e212794de1f7487ac337ea1bf8) new data directory format
- - 2020-02-16 21:15:41 -0800 [572d4f5](commit/572d4f5fbca11f1a704ce34782f9b89a691a8a77) new data directory format
- - 2020-02-16 21:14:13 -0800 [1ba11e0](commit/1ba11e096b698f9a8b63be48a5995624cb75cf58) new data directory format
- - 2020-02-16 21:13:29 -0800 [54cd92f](commit/54cd92fece84b05d52044ed4cea5c3f8f8b8f9cd) misc additions. new data directory format
- - 2020-02-16 15:32:17 -0800 [d66b172](commit/d66b1728e134db39f556f4102db9aa743a0badc2) typo when writing data for non-maxlen units
- - 2020-02-11 18:51:49 -0800 [dda6c7b](commit/dda6c7b17e6b825fd55adaae7afbc80cc2071822) ignore
- - 2020-02-11 18:48:36 -0800 [f7301b6](commit/f7301b6f4b1488d31083475f273f789d7dbc0c03) fixed debug param - its int vs bool
- - 2020-02-11 13:20:11 -0800 [c16842e](commit/c16842e58421174a407e552e3502ab0db873f43f) rtr-client initial commit
+ - 2020-06-06 14:52:54 -0700 [1c065a3](../../commit/1c065a3faa285ada7f33445a7173d9373c46d240) CHANGELOG updated
+ - 2020-06-06 14:51:59 -0700 [bb8ad13](../../commit/bb8ad13e51881ad7f81d9f135940e9b781f72446) added CHANGELOG file
+ - 2020-06-06 14:50:24 -0700 [de0a49b](../../commit/de0a49bcb8a46a1b9b82dc5580ee54012b41c5c3) 1.2.0 release
+ - 2020-06-06 14:46:48 -0700 [a34dc27](../../commit/a34dc2711d5d1f0c9c9682152f04fbf376939c27) pylint, session id, router key, binary protocol code, debug strings  - all improved
+ - 2020-06-06 14:44:49 -0700 [f1bdc8f](../../commit/f1bdc8f5a90b1adbc77aa9cbe69faab34774b9a1) pylint, session id, socket connect, ^C handling - all improved
+ - 2020-06-06 12:12:48 -0700 [0e4c579](../../commit/0e4c5798b13c468c60d58811a8890b555d078c78) pylint kept happy - well somewhat happy
+ - 2020-06-06 12:12:36 -0700 [c50ad98](../../commit/c50ad98a2e361e5e858374006422dabaa8d35001) pylint kept happy - well somewhat happy
+ - 2020-06-06 12:12:11 -0700 [5a16aef](../../commit/5a16aeffb4e0aec28debe1b6b7ae40eaafaee48c) pylint kept happy - well somewhat happy
+ - 2020-06-06 12:11:44 -0700 [333c0bb](../../commit/333c0bb67bdb3a7e2aae6285aec65d4792d07a6d) pylint kept happy - well somewhat happy
+ - 2020-06-06 12:11:27 -0700 [10e0ae3](../../commit/10e0ae321621073a5e5a608cdb235074eaa0d9e3) pylint kept happy - well somewhat happy
+ - 2020-06-06 12:11:04 -0700 [911d6dc](../../commit/911d6dc445793b2be2398cb1a77c01f4e2857e6c) pylint kept happy - well somewhat happy
+ - 2020-06-06 11:53:41 -0700 [393a0f2](../../commit/393a0f2f214ab2eb2364d3ab2fb4e3c721dcdbe8) pylint kept happy - well somewhat happy
+ - 2020-06-05 17:45:28 -0700 [b0096cd](../../commit/b0096cdce6adb617f7d3b59dd978cb8232dec53d) added debug for tracking down SESSION ID issues
+ - 2020-06-04 12:22:05 -0700 [f2dc421](../../commit/f2dc421cc121079952f4237a78bbd7d7989aa920) removed unused README build code
+ - 2020-06-04 12:19:47 -0700 [e6f0b81](../../commit/e6f0b8179c25b78f64ad0369636d890eed0572d0) minor update to usage string
+ - 2020-06-04 12:15:34 -0700 [1041e84](../../commit/1041e84165d6edb46c6d93cfd005873da6cad500) Merge pull request #7 from oskar456/fix_pypi_package
+ - 2020-06-04 12:09:31 -0700 [34989a2](../../commit/34989a22208d9f2689a3ca0dea692b28af70f833) upped version number after pull/8
+ - 2020-06-04 12:06:56 -0700 [69a9bf9](../../commit/69a9bf9372e74c3aabfc63ee716cc4e854a01cba) Merge pull request #8 from gmarsay/ipv6-support
+ - 2020-06-04 12:05:36 -0700 [158000d](../../commit/158000d84e9c4ae3f6ed880565d3310d850f8442) added and fixed support for Session ID - see RFC
+ - 2020-06-04 17:35:03 +0200 [22058a5](../../commit/22058a560d0f6b603e17664b5318ad396f982cc0) Add support for IPv6
+ - 2020-06-02 09:56:17 +0200 [1fef4ae](../../commit/1fef4aee3595426debd3f91951c5e3806439fccf) Keep only RST documentation, fix command line help
+ - 2020-06-02 09:31:35 +0200 [a5c7eeb](../../commit/a5c7eeb87ddeebe22ed0586c9e29c0d67224851c) Make the package work out of the box when installed with pip3
+ - 2020-05-12 17:07:11 -0700 [7a8c723](../../commit/7a8c7234b5e13b26513cb46b4c59306b26d8653c) 1.0.5 release - still testing
+ - 2020-05-12 17:05:08 -0700 [014dbca](../../commit/014dbca6cf5a0dbdf0e94ff4d30cb1350572bb15) cleaned up use of ipaddress types - actually less code
+ - 2020-04-22 14:12:05 -0700 [0e86a4c](../../commit/0e86a4c911e9d28a257b33762fde734ad08ef9fe) 1.0.4 release - still testing
+ - 2020-04-22 14:10:04 -0700 [f8f21c1](../../commit/f8f21c11f7cb73ecda0e473c9305648f8509b9f4) cleaned up route processing, timestamps in message
+ - 2020-04-06 11:36:31 -0700 [5c081ca](../../commit/5c081ca8f5935b69c5265e5f9fe76d112aaa36d4) moved code to rtr_client folder, added session_id code, renamed show to rtr_show, fixed dump duplication
+ - 2020-03-04 20:43:12 -0800 [ced1ec6](../../commit/ced1ec6aa29931d93ecbfc2fcc2d2c993ab08e68) updated and corrected license - issue #2
+ - 2020-02-28 23:47:21 -0800 [c814ac7](../../commit/c814ac7a198393ef0b3a2f7f73253006a81c80e4) pypi packaging added - but not complete
+ - 2020-02-28 23:46:23 -0800 [bda6258](../../commit/bda62580f177e99d6e2c6bfcec72fdcdec5efa35) pypi packaging added
+ - 2020-02-28 23:12:35 -0800 [9f92c32](../../commit/9f92c32d46c388883558a63e895e5b9d9e53a9e2) /data/ correctly defined
+ - 2020-02-28 23:11:21 -0800 [b52616a](../../commit/b52616a092d70701ca1ac4bebeed6f10dfca2204) added more documentation
+ - 2020-02-28 23:11:07 -0800 [21ac8b3](../../commit/21ac8b353b2dca6805735aa2f1a35a276c922a5d) typo
+ - 2020-02-28 23:04:51 -0800 [9422f23](../../commit/9422f23857b97e7fe863eb2a02b1dae4c65fe2c7) added ROA table and show command. moved from netaddr to ipaddress. json file now pretty. added more documentation.
+ - 2020-02-19 20:36:55 -0800 [d17308e](../../commit/d17308e0e2c32163c7d68c0e52bcc582e6bb9a18) decided to cleanly format json file. added new route dump logic
+ - 2020-02-17 13:48:31 -0800 [9eb9122](../../commit/9eb9122bd2ba057c60fe4d96af00324d4225d2f9) Merge pull request #1 from ties/fix/data_directory_requires_name
+ - 2020-02-17 14:43:11 +0100 [562a884](../../commit/562a884efff0691e7b86ead20883b5d7d4039d51) Pass in now to data_directory function
+ - 2020-02-16 21:21:51 -0800 [15726eb](../../commit/15726ebaf5e293e212794de1f7487ac337ea1bf8) new data directory format
+ - 2020-02-16 21:15:41 -0800 [572d4f5](../../commit/572d4f5fbca11f1a704ce34782f9b89a691a8a77) new data directory format
+ - 2020-02-16 21:14:13 -0800 [1ba11e0](../../commit/1ba11e096b698f9a8b63be48a5995624cb75cf58) new data directory format
+ - 2020-02-16 21:13:29 -0800 [54cd92f](../../commit/54cd92fece84b05d52044ed4cea5c3f8f8b8f9cd) misc additions. new data directory format
+ - 2020-02-16 15:32:17 -0800 [d66b172](../../commit/d66b1728e134db39f556f4102db9aa743a0badc2) typo when writing data for non-maxlen units
+ - 2020-02-11 18:51:49 -0800 [dda6c7b](../../commit/dda6c7b17e6b825fd55adaae7afbc80cc2071822) ignore
+ - 2020-02-11 18:48:36 -0800 [f7301b6](../../commit/f7301b6f4b1488d31083475f273f789d7dbc0c03) fixed debug param - its int vs bool
+ - 2020-02-11 13:20:11 -0800 [c16842e](../../commit/c16842e58421174a407e552e3502ab0db873f43f) rtr-client initial commit

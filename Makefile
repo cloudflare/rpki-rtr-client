@@ -13,7 +13,7 @@ CHANGELOG.md: FORCE
 		cp /dev/null $$tmp ; \
 		echo '# Change Log' ; \
 		echo '' ; \
-		git log --date=iso-local --pretty=format:' - %ci [%h](commit/%H) %s' ; \
+		git log --date=iso-local --pretty=format:' - %ci [%h](../../commit/%H) %s' ; \
 		echo '' ; \
 	)  >> $$tmp ; \
 	diff $$tmp CHANGELOG.md || ( cp $$tmp CHANGELOG.md ; echo "CHANGELOG.md - updated" ) ; \
