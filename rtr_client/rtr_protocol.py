@@ -56,6 +56,32 @@ class rfc8210router(object):
 		if self.logger:
 			self.logger.debug(msg)
 
+	# Protocol Data Units (PDUs)
+	_pdu_types = [
+		'Serial Notify',	# 0
+		'Serial Query',		# 1
+		'Reset Query',		# 2
+		'Cache Response',	# 3
+		'IPv4 Prefix',		# 4
+		''			# 5 unused
+		'IPv6 Prefix',		# 6
+		'End of Data',		# 7
+		'Cache Reset',		# 8
+		'Router Key',		# 9
+		'Error Report'		# 10
+	]
+
+	def _pdu_to_name(self, pdu_type):
+		"""RTR RFC 8210 protocol"""
+		try:
+			s = self._pdu_types[pdu_type]
+			if s is not '':
+				return s
+		except IndexError:
+			if pdu_type == 255:
+				return 'Reserved'
+		return str(pdu_type)
+
 	def _read_first4bytes(self, d):
 		"""RTR RFC 8210 protocol"""
 
@@ -64,22 +90,35 @@ class rfc8210router(object):
 		if pdu_type in [0,1,3,7]:
 			session_id = int(d[2]) * 256 + int(d[3])
 			header_flags = None
-			#self._debug_('Protocol Version=%d PDU Type=%d Session ID=%d' % (protocol_version, pdu_type, session_id))
-		if pdu_type in [2,4,6,8]:
+			error_code = None
+			#self._debug_('Protocol Version=%d PDU Type=%s Session ID=%d' % (protocol_version, self._pdu_to_name(pdu_type), session_id))
+		elif pdu_type in [2,4,6,8]:
 			session_id = None
 			header_flags = None
-			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
-		if pdu_type in [5]:
+			error_code = None
+			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
+		elif pdu_type in [5]:
 			# not used! should not be seen
 			session_id = None
 			header_flags = None
-			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
-		if pdu_type in [9]:
+			error_code = None
+			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
+		elif pdu_type in [9]:
+			session_id = None
+			header_flags = int(d[2])
+			error_code = None
+			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
+		elif pdu_type in [10]:
 			session_id = None
 			header_flags = None
-			#self._debug_('Protocol Version=%d PDU Type=%d' % (protocol_version, pdu_type))
+			error_code = int(d[2]) * 256 + int(d[3])
+			self._debug_('Protocol Version=%d PDU Type=%s Error Code=%s' % (protocol_version, self._pdu_to_name(pdu_type), error_code))
 
-		return pdu_type, session_id, header_flags
+		if pdu_type not in [4,6]:
+			## added for Louis - kinda
+			self._debug_("PDU --- pdu_type='%s' session_id='%s' header_flag='%s'" % (self._pdu_to_name(pdu_type), session_id, header_flags))
+
+		return pdu_type, session_id, header_flags, error_code
 
 	def _read_u32bits(self, d):
 		"""RTR RFC 8210 protocol"""
@@ -184,6 +223,7 @@ class rfc8210router(object):
 			# Serial Query - sent by router
 			n = self._read_u32bits(d[0:4])
 			self._debug_('Serial Query: serial=%d' % (n))
+			self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 2:
@@ -243,7 +283,7 @@ class rfc8210router(object):
 			self.set_latest_serial_number(latest_serial_number)
 			self.set_cache_serial_number(latest_serial_number)
 			self.time_set_refresh(self._refresh_interval)
-			## self.set_session_id(session_id)
+			self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 8:
@@ -281,7 +321,7 @@ class rfc8210router(object):
 				# self._debug_('DATA EXPIRED: not enough for eight bytes')
 				break
 			d = packet_buffer[data_index:data_index + 4]
-			pdu_type, session_id, header_flags = self._read_first4bytes(d)
+			pdu_type, session_id, header_flags, error_code = self._read_first4bytes(d)
 
 			d = packet_buffer[data_index + 4:data_index + 8]
 			packet_length = self._read_4byte_length(d)
