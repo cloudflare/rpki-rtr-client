@@ -33,11 +33,11 @@ class RoutingTable(object):
 			return
 
 		if asn in self._ipv[version][cidr][maxlen]:
-			raise Exception("announce1: %s %s %s" % (cidr,asn,maxlen))
+			raise Exception("announce1: %s %s %s" % (cidr, asn, maxlen))
 		try:
 			self._ipv[version][cidr][maxlen] += [{asn:cidr}]
 		except:
-			raise Exception("announce2: %s %s %s" % (cidr,asn,maxlen))
+			raise Exception("announce2: %s %s %s" % (cidr, asn, maxlen))
 			# asn already in there
 
 	def withdraw(self, cidr, asn, maxlen=None):
@@ -64,7 +64,7 @@ class RoutingTable(object):
 				##  asn not found
 
 		# clearly we didn't find the route you are trying to withdraw
-		raise IndexError("withdraw: %s %s %s" % (cidr,asn,maxlen))
+		raise IndexError("withdraw: %s %s %s" % (cidr, asn, maxlen))
 
 	def save_routing_table(self):
 		"""RTR protocol basic Routing Table support"""
