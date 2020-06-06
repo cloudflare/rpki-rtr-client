@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""rtr_show"""
 
 import sys
 import getopt
@@ -15,6 +16,8 @@ except ImportError:
 
 
 def read_file(routingtable, filename, debug):
+	"""rtr_show"""
+
 	count = 0
 	with open('data/routingtable.json', 'r') as fd:
 		data = json.load(fd)
@@ -36,6 +39,8 @@ def read_file(routingtable, filename, debug):
 		sys.stderr.flush()
 
 def doit(args=None):
+	"""rtr_show"""
+
 	debug = 0
 	filename = 'data/routingtable.json'
 	long_flag = False
@@ -51,18 +56,18 @@ def doit(args=None):
 
 	try:
 		opts, args = getopt.getopt(args, 'HVvf:l', [
-			'help',
-			'version',
-			'verbose',
-			'file=',
-			'long'
-			])
+						'help',
+						'version',
+						'verbose',
+						'file=',
+						'long'
+						])
 	except getopt.GetoptError:
-		exit(usage)
+		sys.exit(usage)
 
 	for opt, arg in opts:
 		if opt in ('-H', '--help'):
-			exit(usage)
+			sys.exit(usage)
 		if opt in ('-V', '--version'):
 			sys.exit('%s: version: %s' % (sys.argv[0], __version__))
 		elif opt in ('-v', '--verbose'):
@@ -80,9 +85,11 @@ def doit(args=None):
 			routingtable.show(ipaddress.ip_network(route), long_flag)
 		except Exception as e:
 			sys.stderr.write('%s: %s\n' % (route, e))
-	exit(0)
+	sys.exit(0)
 
 def main(args=None):
+	"""rtr_show"""
+
 	if args is None:
 		args = sys.argv[1:]
 	doit(args)
