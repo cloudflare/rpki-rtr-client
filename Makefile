@@ -5,8 +5,19 @@ PYLINT = pylint
 EMAIL = "mahtin@mahtin.com"
 NAME = "rpki-rtr-client"
 
-all:	README.rst build
+all:	README.rst CHANGELOG.md build
 
+CHANGELOG.md: FORCE
+	@ tmp=/tmp/_$$$$.md ; \
+	( \
+		cp /dev/null $$tmp ; \
+		echo '# Change Log' ; \
+		echo '' ; \
+		git log --date=iso-local --pretty=format:' - %ci [%h](commit/%H) %s' ; \
+		echo '' ; \
+	)  >> $$tmp ; \
+	diff $$tmp CHANGELOG.md || ( cp $$tmp CHANGELOG.md ; echo "CHANGELOG.md - updated" ) ; \
+	rm $$tmp
 FORCE:
 
 build: setup.py
