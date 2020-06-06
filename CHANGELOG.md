@@ -1,5 +1,6 @@
 # Change Log
 
+ - 2020-06-06 14:51:59 -0700 [bb8ad13](commit/bb8ad13e51881ad7f81d9f135940e9b781f72446) added CHANGELOG file
  - 2020-06-06 14:50:24 -0700 [de0a49b](commit/de0a49bcb8a46a1b9b82dc5580ee54012b41c5c3) 1.2.0 release
  - 2020-06-06 14:46:48 -0700 [a34dc27](commit/a34dc2711d5d1f0c9c9682152f04fbf376939c27) pylint, session id, router key, binary protocol code, debug strings  - all improved
  - 2020-06-06 14:44:49 -0700 [f1bdc8f](commit/f1bdc8f5a90b1adbc77aa9cbe69faab34774b9a1) pylint, session id, socket connect, ^C handling - all improved
