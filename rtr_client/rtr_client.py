@@ -23,7 +23,6 @@ try:
 except ImportError:
 	from .rtr_protocol import rfc8210router
 	from .__init__ import __version__
-	
 
 #
 # rtr protocol - port 8282 - clear text - Cisco, Juniper
@@ -40,6 +39,7 @@ class Connect(object):
 	connect_timeout = 5 # this is about the socket connect timeout and not data timeout
 
 	def __init__(self, host=None, port=None):
+		"""RTR client"""
 		if host:
 			self.rtr_host = host
 		if port:
@@ -47,16 +47,19 @@ class Connect(object):
 		self.fd = self._connect()
 
 	def close(self):
+		"""RTR client"""
 		self.fd.close()
 		self.fd = None
 
 	def recv(self, n):
+		"""RTR client"""
 		try:
 			return self.fd.recv(n)
 		except Exception as e:
 			raise
 
 	def send(self, packet):
+		"""RTR client"""
 		try:
 			return self.fd.send(packet)
 		except BrokenPipeError as e:
@@ -69,33 +72,50 @@ class Connect(object):
 			sys.stderr.flush()
 			raise
 
+	def name(self):
+		"""RTR client"""
+
+		if self._sockaddr:
+			return '%s.%s' % socket.getnameinfo(self._sockaddr, 0)
+		raise ValueError
+
 	def _sleep(self, n):
+		"""RTR client"""
 		# simple back off for failed connect
 		time.sleep(n)
 
 	def _connect(self):
-		family, type, proto, canonname, sockaddr = socket.getaddrinfo(self.rtr_host, self.rtr_port, 0, 0, socket.SOL_TCP)[0]
+		"""RTR client"""
+		try:
+			ginfo = socket.getaddrinfo(self.rtr_host, self.rtr_port, 0, 0, socket.SOL_TCP)
+		except socket.gaierror as e:
+			sys.stderr.write('socket: %s.%s: %s (%d)\n' % (self.rtr_host, self.rtr_port, str(e.strerror), int(e.errno)))
+			sys.stderr.flush()
+			sys.exit(1)
 
-		for ii in [1, 2, 4, 8, 16, 32]:
-			try:
-				fd = socket.socket(family, socket.SOCK_STREAM)
-				fd.settimeout(self.connect_timeout)
-				fd.connect(sockaddr)
-				return fd
-			except KeyboardInterrupt:
-				sys.stderr.write('socket connection: ^C\n')
-				sys.stderr.flush()
-				sys.exit(1)
-			except socket.timeout:
-				sys.stderr.write('socket connection: Timeout\n ')
-				sys.stderr.flush()
-				self._sleep(ii)
-				continue
-			except socket.error:
-				sys.stderr.write('socket connection: Error %s\n ' % (socket.error))
-				sys.stderr.flush()
-				self._sleep(ii)
-				continue
+		for ii in [1, 1, 2, 4, 8, 16, 32]:
+			for gthis in ginfo:
+				try:
+					afamily, socktype, proto, canonname, sockaddr = gthis
+					fd = socket.socket(afamily, socktype, proto)
+					fd.settimeout(self.connect_timeout)
+					fd.connect(sockaddr)
+					self._sockaddr = sockaddr
+					self.fd = fd
+					return fd
+				except socket.timeout:
+					sys.stderr.write('socket: %s.%s: connection timeout\n' % (sockaddr[0], sockaddr[1]))
+					sys.stderr.flush()
+					self._sleep(ii)
+					continue
+				except socket.error as e:
+					sys.stderr.write('socket: %s.%s: %s (%d)\n' % (sockaddr[0], sockaddr[1], str(e.strerror), int(e.errno)))
+					sys.stderr.flush()
+					self._sleep(ii)
+					continue
+
+		self._sockaddr = None
+		self.fd = None
 		return None
 
 class Process(object):
@@ -105,24 +125,30 @@ class Process(object):
 		"""RTR client"""
 
 		def __init__(self):
+			"""RTR client"""
 			self.last_buffer = None
 
 		def clear(self):
+			"""RTR client"""
 			if self.last_buffer:
 				self.last_buffer = None
 		def read(self):
+			"""RTR client"""
 			b = self.last_buffer
 			if self.last_buffer:
 				self.last_buffer = None
 			return b
 
 		def write(self, b):
+			"""RTR client"""
 			self.last_buffer = b
 
 	def __init__(self):
+		"""RTR client"""
 		self.buf = self.Buffer()
 
 	def do_hunk(self, rtr_session, v):
+		"""RTR client"""
 		if not v or len(v) == 0:
 			# END OF FILE
 			return False
@@ -137,6 +163,7 @@ class Process(object):
 		return True
 
 	def clear(self):
+		"""RTR client"""
 		self.buf.clear()
 
 def now_in_utc():
@@ -174,6 +201,7 @@ def dump_routes(rtr_session, serial, session_id):
 				"""RTR client"""
 
 				def default(self, obj):
+					"""RTR client"""
 					if pytricia and isinstance(obj, pytricia.PyTricia):
 						a = {}
 						for prefix in obj:
@@ -189,8 +217,8 @@ def dump_routes(rtr_session, serial, session_id):
 
 		# clean up from this serial number
 		rtr_session.clear_routes()
-		sys.stderr.write('%s: DUMP ROUTES: session_id=%d serial=%d announce=%d/withdraw=%d\n' %
-				 (now_in_utc(), session_id, serial, len(routes['announce']), len(routes['withdraw'])))
+		sys.stderr.write('%s: DUMP ROUTES: session_id=%d serial=%d announce=%d/withdraw=%d\n' % (
+						now_in_utc(), session_id, serial, len(routes['announce']), len(routes['withdraw'])))
 		sys.stderr.flush()
 
 		# dump the full routing table
@@ -199,7 +227,7 @@ def dump_routes(rtr_session, serial, session_id):
 def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None, dump=False, debug=0):
 	"""RTR client"""
 
-	rtr_session = rfc8210router(serial=serial, debug=debug)
+	rtr_session = rfc8210router(serial=serial, session_id=session_id, debug=debug)
 
 	if dump:
 		data_directory(now_in_utc())
@@ -212,26 +240,46 @@ def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None,
 	connection = None
 	while True:
 		if not connection:
-			connection = Connect(host, port)
-			p.clear()
-			have_session_id = False
-			sys.stderr.write('%s: RECONNECT\n' % (now_in_utc()))
-			sys.stderr.flush()
+			try:
+				connection = Connect(host, port)
+			except KeyboardInterrupt:
+				# no need to print anything - just exit!
+				sys.exit(1)
 
-		if not connection:
-			sys.stderr.write('\n%s: NO NETWORK CONNECTION\n' % (now_in_utc()))
+		if not connection.fd:
+			connection = None
+			sys.stderr.write('%s: NO NETWORK CONNECTION\n' % (now_in_utc()))
 			sys.stderr.flush()
-			sys.exit(1)
+			# sys.exit(1)
+			continue
 
-		if serial == None or serial == 0:
+		p.clear()
+		have_session_id = False
+		sys.stderr.write('%s: CONNECT %s\n' % (now_in_utc(), connection.name()))
+		sys.stderr.flush()
+
+		if session_id is None or session_id == 0 or serial is None or serial == 0:
+			# starting from scratch!
 			packet = rtr_session.reset_query()
 			serial = 0
+			have_session_id = False
+			session_id = 0
 		else:
-			packet = rtr_session.serial_query(serial)
-		sys.stderr.write('+')
-		sys.stderr.flush()
-		connection.send(packet)
-		rtr_session.process(packet)
+			# packet = rtr_session.serial_query(serial)
+			packet = rtr_session.serial_query()
+
+		# send the first packet on the connection -- kicking things off!
+		try:
+			sys.stderr.write('+')
+			sys.stderr.flush()
+			connection.send(packet)
+		except Exception as e:
+			sys.stderr.write('send: %s\n' % (e))
+			sys.stderr.flush()
+			connection.close()
+			connection = None
+			# this will open up a fresh connection and try all over again
+			continue
 
 		while True:
 			# At every oppertunity, see if we have a new session_id number
@@ -241,6 +289,7 @@ def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None,
 					if new_session_id != session_id:
 						sys.stderr.write('\n%s: REFRESHED SESSION ID %d->%d\n' % (now_in_utc(), session_id, new_session_id))
 						sys.stderr.flush()
+						# consider a reset here - once we handle 0
 				else:
 					sys.stderr.write('\n%s: NEW SESSION ID %d\n' % (now_in_utc(), new_session_id))
 					sys.stderr.flush()
@@ -249,28 +298,30 @@ def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None,
 				have_session_id = True
 			except ValueError:
 				# no session_id number known yet - should only happen once
-				# sys.stderr.write('%s: NO SESSION ID\n' % (now_in_utc()))
-				# sys.stderr.flush()
+				sys.stderr.write('%s: NO SESSION ID\n' % (now_in_utc()))
+				sys.stderr.flush()
 				pass
 
 			# At every oppertunity, see if we have a new serial number
 			new_serial = rtr_session.cache_serial_number()
 			if new_serial != serial:
 				try:
-					temp_session_id = rtr_session.get_session_id()
+					new_session_id = rtr_session.get_session_id()
 				except ValueError:
-					temp_session_id = 0
-				sys.stderr.write('\n%s: SESSION %d NEW SERIAL %d->%d\n' % (now_in_utc(), temp_session_id, serial, new_serial))
+					new_session_id = 0
+				sys.stderr.write('\n%s: SESSION %d NEW SERIAL %s->%d\n' % (now_in_utc(), new_session_id, serial, new_serial))
 				sys.stderr.flush()
 				# dump present routes into file based on serial number
-				dump_routes(rtr_session, new_serial, temp_session_id)
+				dump_routes(rtr_session, new_serial, new_session_id)
 				# update serial number
 				serial = new_serial
+				# update session_id
+				session_id = new_session_id
 
 			try:
-				# because random timers are your friend!
+				# because random timers are your friend! but keep above one second - just because
 				delta = 0.2
-				this_timeout = int(randrange(timeout * (1-delta), timeout * (1+delta), 1))
+				this_timeout = max(1.0, float(randrange(timeout * (1-delta), timeout * (1+delta), 1)))
 				ready = select.select([connection.fd], [], [], this_timeout)
 			except KeyboardInterrupt:
 				sys.stderr.write('\nselect wait: ^C\n')
@@ -293,7 +344,7 @@ def rtr_client(host=None, port=None, serial=None, session_id=None, timeout=None,
 
 				# timed out - go ask for more data!
 				packet = rtr_session.serial_query()
-				rtr_session.process(packet)
+				## rtr_session.process(packet)
 				try:
 					sys.stderr.write('s')
 					sys.stderr.flush()
@@ -337,27 +388,30 @@ def doit(args=None):
 	session_id = None
 	timeout = 300 # five minutes for some random reason
 
-	usage = ('usage: rtr_client '
-		 + '[-H|--help] '
-		 + '[-V|--version] '
-		 + '[-v|--verbose] '
-		 + '[-h HOSTNAME|--host=HOSTNAME] '
-		 + '[-p PORTNUMBER|--port=PORTNUMBER] '
-		 + '[-s SERIALNUMBER|--serial=SERIALNUMBER] '
-		 + '[-t SECONDS|--timeout=SECONDS] '
-		 + '[-d|--dump] '
-		 )
+	usage = (
+					'usage: rtr_client '
+					+ '[-H|--help] '
+					+ '[-V|--version] '
+					+ '[-v|--verbose] '
+					+ '[-h HOSTNAME|--host=HOSTNAME] '
+					+ '[-p PORTNUMBER|--port=PORTNUMBER] '
+					+ '[-s SERIALNUMBER|--serial=SERIALNUMBER] '
+					+ '[-S SESSIONID|--session=SESSIONID] '
+					+ '[-t SECONDS|--timeout=SECONDS] '
+					+ '[-d|--dump] '
+		)
 
 	try:
-		opts, args = getopt.getopt(args, 'HVvh:p:s:t:d', [
-			'help',
-			'version',
-			'verbose',
-			'host=', 'port=',
-			'serial=',
-			'timeout=',
-			'debug'
-			])
+		opts, args = getopt.getopt(args, 'HVvh:p:s:S:t:d', [
+						'help',
+						'version',
+						'verbose',
+						'host=', 'port=',
+						'serial=',
+						'session=',
+						'timeout=',
+						'debug'
+						])
 	except getopt.GetoptError:
 		sys.exit(usage)
 
@@ -373,7 +427,9 @@ def doit(args=None):
 		elif opt in ('-p', '--port'):
 			port = int(arg)
 		elif opt in ('-s', '--serial'):
-			serial = arg
+			serial = int(arg)
+		elif opt in ('-S', '--session'):
+			session_id = int(arg)
 		elif opt in ('-t', '--timeout'):
 			timeout = int(arg)
 		elif opt in ('-d', '--dump'):
