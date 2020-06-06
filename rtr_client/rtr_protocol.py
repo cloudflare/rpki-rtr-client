@@ -27,7 +27,7 @@ class rfc8210router(object):
 			self.logger = None
 
 		if session_id:
-			self._current_session_id = session_id
+			self._current_session_id = int(session_id)
 			self._current_session_id_exists = True
 		else:
 			self._current_session_id = None
@@ -47,7 +47,6 @@ class rfc8210router(object):
 		except:
 			# this handles the case where RoutingTable() isn't configured correctly
 			self._routingtable = None
-			pass
 		self.clear_routes()
 
 	def _debug_(self, msg):
@@ -56,26 +55,26 @@ class rfc8210router(object):
 		if self.logger:
 			self.logger.debug(msg)
 
-	# Protocol Data Units (PDUs)
+	# Protocol Data Units (PDUs) from RFC821
 	_pdu_types = [
-		'Serial Notify',	# 0
-		'Serial Query',		# 1
-		'Reset Query',		# 2
-		'Cache Response',	# 3
-		'IPv4 Prefix',		# 4
-		''			# 5 unused
-		'IPv6 Prefix',		# 6
-		'End of Data',		# 7
-		'Cache Reset',		# 8
-		'Router Key',		# 9
-		'Error Report'		# 10
+					'Serial Notify',	# 0
+					'Serial Query',		# 1
+					'Reset Query',		# 2
+					'Cache Response',	# 3
+					'IPv4 Prefix',		# 4
+					'',			# 5 unused
+					'IPv6 Prefix',		# 6
+					'End of Data',		# 7
+					'Cache Reset',		# 8
+					'Router Key',		# 9
+					'Error Report'		# 10
 	]
 
 	def _pdu_to_name(self, pdu_type):
 		"""RTR RFC 8210 protocol"""
 		try:
 			s = self._pdu_types[pdu_type]
-			if s is not '':
+			if s != '':
 				return s
 		except IndexError:
 			if pdu_type == 255:
@@ -87,36 +86,32 @@ class rfc8210router(object):
 
 		protocol_version = int(d[0])
 		pdu_type = int(d[1])
-		if pdu_type in [0,1,3,7]:
+		if pdu_type in [0, 1, 3, 7]:
 			session_id = int(d[2]) * 256 + int(d[3])
 			header_flags = None
 			error_code = None
-			#self._debug_('Protocol Version=%d PDU Type=%s Session ID=%d' % (protocol_version, self._pdu_to_name(pdu_type), session_id))
-		elif pdu_type in [2,4,6,8]:
+		elif pdu_type in [2, 4, 6, 8]:
 			session_id = None
 			header_flags = None
 			error_code = None
-			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
 		elif pdu_type in [5]:
 			# not used! should not be seen
 			session_id = None
 			header_flags = None
 			error_code = None
-			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
 		elif pdu_type in [9]:
 			session_id = None
 			header_flags = int(d[2])
 			error_code = None
-			#self._debug_('Protocol Version=%d PDU Type=%s' % (protocol_version, self._pdu_to_name(pdu_type)))
 		elif pdu_type in [10]:
 			session_id = None
 			header_flags = None
 			error_code = int(d[2]) * 256 + int(d[3])
-			self._debug_('Protocol Version=%d PDU Type=%s Error Code=%s' % (protocol_version, self._pdu_to_name(pdu_type), error_code))
 
-		if pdu_type not in [4,6]:
-			## added for Louis - kinda
-			self._debug_("PDU --- pdu_type='%s' session_id='%s' header_flag='%s'" % (self._pdu_to_name(pdu_type), session_id, header_flags))
+		if pdu_type not in [4, 6]:
+			# we don't debug the IPv4/IPv6 blocks because they are prolific
+			self._debug_("PDU: %s session_id='%s' header_flag='%s' error_code='%s'" % (
+							self._pdu_to_name(pdu_type), session_id, header_flags, error_code))
 
 		return pdu_type, session_id, header_flags, error_code
 
@@ -145,14 +140,14 @@ class rfc8210router(object):
 		"""RTR RFC 8210 protocol"""
 
 		ipv6 = "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x" % (
-								int(d[0]) * 256 + int(d[1]),
-								int(d[2]) * 256 + int(d[3]),
-								int(d[4]) * 256 + int(d[5]),
-								int(d[6]) * 256 + int(d[7]),
-								int(d[8]) * 256 + int(d[9]),
-								int(d[10]) * 256 + int(d[11]),
-								int(d[12]) * 256 + int(d[13]),
-								int(d[14]) * 256 + int(d[15]))
+						int(d[0]) * 256 + int(d[1]),
+						int(d[2]) * 256 + int(d[3]),
+						int(d[4]) * 256 + int(d[5]),
+						int(d[6]) * 256 + int(d[7]),
+						int(d[8]) * 256 + int(d[9]),
+						int(d[10]) * 256 + int(d[11]),
+						int(d[12]) * 256 + int(d[13]),
+						int(d[14]) * 256 + int(d[15]))
 		# self._debug_('              IP %s' % (ipv6))
 		return ipv6
 
@@ -163,6 +158,19 @@ class rfc8210router(object):
 		# self._debug_('             ASN AS%d' % (asn))
 		return asn
 
+	def _read_ski(self, d):
+		"""RTR RFC 8210 protocol"""
+
+		# The Key Identifier used for resource certificates is the 160-bit SHA-1 hash (RFC6487 4.8.2)
+		ski = "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x" % (
+						int(d[0]), int(d[1]), int(d[2]), int(d[3]),
+						int(d[4]), int(d[5]), int(d[6]), int(d[7]),
+						int(d[8]), int(d[9]), int(d[10]), int(d[11]),
+						int(d[12]), int(d[13]), int(d[14]), int(d[15]),
+						int(d[16]), int(d[17]), int(d[18]), int(d[19]))
+		# self._debug_('             SKI %s' % (ski))
+		return ski
+
 	def _write_u32bits(self, u32):
 		"""RTR RFC 8210 protocol"""
 
@@ -170,7 +178,17 @@ class rfc8210router(object):
 		s[0] = (u32 >> 24) & 0xff
 		s[1] = (u32 >> 16) & 0xff
 		s[2] = (u32 >>  8) & 0xff
-		s[3] = (u32      ) & 0xff
+		s[3] = (u32 >>  0) & 0xff
+		return bytes(s)
+
+	def _write_u8bits_by4(self, u8a, u8b, u8c, u8d):
+		"""RTR RFC 8210 protocol"""
+
+		s = bytearray(b'\x00\x00\x00\x00')
+		s[0] = u8a & 0xff
+		s[1] = u8b & 0xff
+		s[2] = u8c & 0xff
+		s[3] = u8d & 0xff
 		return bytes(s)
 
 	def _record_route(self, flag_announce, cidr, asn, maxlen=None):
@@ -203,18 +221,18 @@ class rfc8210router(object):
 
 		return time.strftime('%H:%M:%S', time.gmtime(secs))
 
-	def _process_pdu(self, pdu_type, session_id, header_flags, d):
+	def _process_pdu(self, pdu_type, session_id, header_flags, error_code, d):
 		"""RTR RFC 8210 protocol"""
 
 		if pdu_type == 0:
 			# Serial Notify
 			serial = self._read_u32bits(d[0:4])
 			self._debug_('Serial Notify: cache_current_serial=%d latest_current_serial=%d serial=%d current_session_id=%s session_id=%d' % (
-								self.cache_serial_number(),
-								self.latest_serial_number(),
-								serial,
-								self._current_session_id,
-								session_id))
+							self.cache_serial_number(),
+							self.latest_serial_number(),
+							serial,
+							self._current_session_id,
+							session_id))
 			self.set_latest_serial_number(serial)
 			self.set_session_id(session_id)
 			return True
@@ -223,7 +241,6 @@ class rfc8210router(object):
 			# Serial Query - sent by router
 			n = self._read_u32bits(d[0:4])
 			self._debug_('Serial Query: serial=%d' % (n))
-			self.set_session_id(session_id)
 			return True
 
 		if pdu_type == 2:
@@ -245,7 +262,6 @@ class rfc8210router(object):
 				flag_announce = 'W' # withdrawal
 			mask = int(d[1])
 			maxlen = int(d[2])
-			unused = int(d[3])
 			if pdu_type == 6:
 				# IPv6
 				ip = self._read_ipv6(d[4:4 + 16])
@@ -272,14 +288,14 @@ class rfc8210router(object):
 			self._retry_interval = self._read_u32bits(d[8:12])
 			self._expire_interval = self._read_u32bits(d[12:16])
 			self._debug_('End of Data: n_routes=%d/%d session_id=%d serial=%d refresh=%s retry=%s expire=%s' % (
-													len(self._routes['announce']),
-													len(self._routes['withdraw']),
-													session_id,
-													latest_serial_number,
-													self._convert_to_hms(self._refresh_interval),
-													self._convert_to_hms(self._retry_interval),
-													self._convert_to_hms(self._expire_interval)
-												))
+							len(self._routes['announce']),
+							len(self._routes['withdraw']),
+							session_id,
+							latest_serial_number,
+							self._convert_to_hms(self._refresh_interval),
+							self._convert_to_hms(self._retry_interval),
+							self._convert_to_hms(self._expire_interval)
+						))
 			self.set_latest_serial_number(latest_serial_number)
 			self.set_cache_serial_number(latest_serial_number)
 			self.time_set_refresh(self._refresh_interval)
@@ -295,13 +311,21 @@ class rfc8210router(object):
 
 		if pdu_type == 9:
 			# Router Key
-			self._debug_('Router Key: ... NOT CODED YET')
+			if header_flags & 0x01 == 0x01:
+				flag_announce = 'A' # announcement
+			else:
+				flag_announce = 'W' # withdrawal
+			ski = self._read_ski(d[4:4 + 20])
+			asn = self._read_asn(d[24:24 + 4])
+			subject_public_key = d[28:]
+			self._debug_('Router Key: %1s SKI=%s AS%d %r ... NOT CODED YET' % (flag_announce, ski, asn, subject_public_key))
 			return True
 
 		if pdu_type == 10:
 			# Error Report
-			self._debug_('Error Report: ... NOT CODED YET')
-			return True
+			self._debug_('Error Report: %d ... NOT CODED YET' % (error_code))
+			# we should do something there becuase it actually is a protocol issue - something is wrong - for now return False
+			return False
 
 		if pdu_type == 255:
 			# Reserved
@@ -335,7 +359,8 @@ class rfc8210router(object):
 			d = packet_buffer[data_index + 8:data_index+packet_length]
 			data_index = data_index + packet_length
 
-			if not self._process_pdu(pdu_type, session_id, header_flags, d):
+			if not self._process_pdu(pdu_type, session_id, header_flags, error_code, d):
+				# something went wrong - this is not good
 				break
 
 		if data_index != data_index_max:
@@ -366,8 +391,17 @@ class rfc8210router(object):
 			self.set_cache_serial_number(serial)
 		serial = self.cache_serial_number()
 
-		s = self._write_u32bits(serial)
-		serial_query = b'\x01\x01\x00\x00' + b'\x00\x00\x00\x0c' + s
+		if self._current_session_id_exists:
+			session_id = self._current_session_id
+		else:
+			session_id = 0
+
+		serial_query = (
+						self._write_u8bits_by4(1, 1, (session_id>>8)&0xff, (session_id)&0xff) +
+						self._write_u32bits(12) +
+						self._write_u32bits(serial)
+				)
+		self._debug_('SEND SERIAL QUERY: %r' % (serial_query))
 		return serial_query
 
 	def reset_query(self):
@@ -385,7 +419,9 @@ class rfc8210router(object):
 		"""
 		self.set_latest_serial_number(0)
 		self.set_cache_serial_number(0)
-		reset_query = b'\x01\x02\x00\x00' + b'\x00\x00\x00\x08'
+		self.set_session_id(0)
+		reset_query = self._write_u8bits_by4(1, 2, 0, 0) + self._write_u32bits(8)
+		self._debug_('SEND RESET QUERY: %r' % (reset_query))
 		return reset_query
 
 	def get_session_id(self):
