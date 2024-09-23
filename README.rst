@@ -49,7 +49,7 @@ command line ``-h|--host`` and ``-p|--port`` arguments.
        ^C
        $
 
-A modocom of debug information is available to show the serial number
+A modicom of debug information is available to show the serial number
 and the progress of accepting announce/widthdraw valid ROAs. The code
 will always show the progress of serial numbers plus the number of valid
 ROAs associated with that serial number.
